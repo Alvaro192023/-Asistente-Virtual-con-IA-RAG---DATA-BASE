@@ -1,0 +1,1989 @@
+{
+  "name": "RAG DATA BASE",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1mHqRYZpkH8tc8JghXZIuBI26pEQSt4Wv",
+          "mode": "list",
+          "cachedResultName": "PB-KnowledgeBaseUploads",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1mHqRYZpkH8tc8JghXZIuBI26pEQSt4Wv"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        912
+      ],
+      "id": "c3a05e30-c4fa-40c8-b175-d8dfef0634ab",
+      "name": "File Created"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1mHqRYZpkH8tc8JghXZIuBI26pEQSt4Wv",
+          "mode": "list",
+          "cachedResultName": "PB-KnowledgeBaseUploads",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1mHqRYZpkH8tc8JghXZIuBI26pEQSt4Wv"
+        },
+        "event": "fileUpdated",
+        "options": {
+          "fileType": "all"
+        }
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        704
+      ],
+      "id": "9283d13d-44e6-47ad-9f66-8ee9eef27945",
+      "name": "Update to File"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": true
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1760,
+        800
+      ],
+      "id": "6acf8a31-8898-42f7-bfc3-ee6c9d685d2d",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "263e6e5e-a214-43e6-9729-de52a01dc6d0",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "c6a2bde6-b4f4-4523-bbeb-12f5141807b3",
+              "name": "file_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "7eaabe7e-9e72-4048-b388-23ed0147f277",
+              "name": "mime_type",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "a17d6c54-127b-4e38-8648-d88a65eb59d2",
+              "name": "size",
+              "value": "={{ $json.size }}",
+              "type": "string"
+            },
+            {
+              "id": "2afc0dde-a645-4865-9c04-812e47bef838",
+              "name": "web_content_link",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "3f55b007-bba0-4969-9a41-5ba1b534cf1b",
+              "name": "web_view_link",
+              "value": "={{ $json.webViewLink }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2032,
+        832
+      ],
+      "id": "f786550b-8aeb-4d55-a6ed-323a782ad5fd",
+      "name": "Set File ID"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT file_id FROM knowledge_base WHERE file_id = '{{ $node['Set File ID'].json['file_id'] }}'",
+        "options": {
+          "queryReplacement": "={{ $json.file_name }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2448,
+        480
+      ],
+      "id": "cc35550a-ceeb-423a-bd54-938ce5a19b6e",
+      "name": "Check for Duplicates",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        4240,
+        208
+      ],
+      "id": "b076cea0-86af-485f-b541-434385f44923",
+      "name": "Extract from File PDF",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        3808,
+        608
+      ],
+      "id": "108c9600-625a-4391-b34a-2ff67f79af0b",
+      "name": "Extract from CSV",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        3808,
+        1008
+      ],
+      "id": "dd3532e2-b6ea-4593-bd8a-d61df747bc42",
+      "name": "Extract from XLSX",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        4032,
+        768
+      ],
+      "id": "71a39d13-16e2-4503-98d9-4ddb4f660c0f",
+      "name": "Aggregate",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        4240,
+        768
+      ],
+      "id": "3b8834b2-cebb-4bba-b134-b33eef49121b",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "operation": "rtf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        4240,
+        1184
+      ],
+      "id": "e9290923-bb87-43e4-8539-013d4b86ac99",
+      "name": "Extract from RTF",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "tableId": "error_log",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "error_type",
+              "fieldValue": "=\n{{ $json.error_type }}"
+            },
+            {
+              "fieldId": "file_name",
+              "fieldValue": "={{ $json.file_name }}"
+            },
+            {
+              "fieldId": "mime_type",
+              "fieldValue": "={{ $json.mime_type }}"
+            },
+            {
+              "fieldId": "file_size",
+              "fieldValue": "={{ $json.size }}"
+            },
+            {
+              "fieldId": "file_id",
+              "fieldValue": "={{ $json.file_id }}"
+            },
+            {
+              "fieldId": "timestamp",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        992
+      ],
+      "id": "5370596f-0095-45f7-a920-d6d04fbaa0bb",
+      "name": "Error Logger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $node['Set File ID'].json['size'] !== undefined ? $node['Set File ID'].json['size'] : 0 }}",
+              "value2": 50000000
+            },
+            {
+              "value1": "={{ $json.size }}",
+              "value2": 50000000
+            }
+          ],
+          "string": [
+            {
+              "value1": "={{ ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword', 'image/jpeg', 'image/png', 'application/vnd.oasis.opendocument.spreadsheet','text/plain', 'text/csv','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.google-apps.document', 'application/vnd.google-apps.spreadsheet','application/rtf'].includes($node['Set File ID'].json['mime_type']) }}\n\n",
+              "operation": "contains",
+              "value2": "={{true}}"
+            }
+          ]
+        }
+      },
+      "name": "Validate File",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        512
+      ],
+      "id": "4b856633-8b4e-4a8a-bab5-d544461fd607"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b610b37f-e89a-4e51-aa31-97f0a994ea30",
+              "leftValue": "={{ $node['Check for Duplicates'].json.file_id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2640,
+        480
+      ],
+      "id": "3923475c-60fc-4252-86b3-504f29ce79e1",
+      "name": "IF Duplicate Check"
+    },
+    {
+      "parameters": {
+        "tableId": "error_log",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "error_type",
+              "fieldValue": "Duplicate file"
+            },
+            {
+              "fieldId": "file_name",
+              "fieldValue": "={{ $node['Set File ID'].json['file_name'] }}"
+            },
+            {
+              "fieldId": "file_id",
+              "fieldValue": "={{ $node['Set File ID'].json['file_id'] }}"
+            },
+            {
+              "fieldId": "timestamp",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        464
+      ],
+      "id": "2e71b5a0-ed87-4c12-bb1f-d260b9de427a",
+      "name": "Log Duplicate"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "embeddingBatchSize": 20,
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        4512,
+        464
+      ],
+      "id": "0991a0ff-c78e-49e6-9ccc-6f91b466887d",
+      "name": "Supabase Vector Store"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        4480,
+        688
+      ],
+      "id": "7e9b4635-4476-4ee5-bd56-c95c67d91421",
+      "name": "Embeddings OpenAI"
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.data || $json.text || $json.concatenated_data }}\n",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_id",
+                "value": "={{ $('Set File ID').item.json.file_id }}"
+              },
+              {
+                "name": "file_name",
+                "value": "={{ $('Set File ID').item.json.file_name }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        4608,
+        688
+      ],
+      "id": "580a6c86-fb17-4ed4-8c12-05e1f6d4955c",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a5687219-338a-4ea5-833f-da840efac3df",
+              "name": "debug_file_id",
+              "value": "={{ $node['Set File ID'].json['file_id'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2608,
+        768
+      ],
+      "id": "0fbed989-2874-4ca1-9f45-1b0ec9880fc2",
+      "name": "Debug File ID"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set File ID').item.json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3344,
+        768
+      ],
+      "id": "2c49c91a-9c37-4ede-8ab4-41c9bb553eb2",
+      "name": "Download File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f20f892c-90e8-4973-bbde-9e3ebde602ab",
+              "name": "id",
+              "value": "=\n{{ $('Set File ID').item.json.file_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a7188c7a-a689-4661-9cf6-6b30951b3af3",
+              "name": "schema",
+              "value": "={{ $('Extract from XLSX').isExecuted ? $('Extract from XLSX').first().json.keys().toJsonString() :$('Extract from CSV').first().json.keys().toJsonString() }}",
+              "type": "string"
+            },
+            {
+              "id": "c14b4ea3-4c03-4846-a605-7cfc6b660c84",
+              "name": "data",
+              "value": "={{ $json.concatenated_data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4544,
+        1184
+      ],
+      "id": "86ff0f7b-dc34-4548-89ab-c05d654bf665",
+      "name": "Set Schema"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "document_metadata",
+          "mode": "list",
+          "cachedResultName": "document_metadata"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Set File ID').item.json.file_id }}",
+            "schema": "={{ $json.schema }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "schema",
+              "displayName": "schema",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4704,
+        1184
+      ],
+      "id": "19b5bd04-5db8-4f5e-9392-8644ee4472fc",
+      "name": "Schema Document Metadata"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Set File ID').item.json.mime_type }}",
+                    "rightValue": "=application/pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6f5074e4-26e8-482b-a0e9-53c942b18e8f"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PDF"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9e5b9b03-448c-4545-9d7a-467924f6d227",
+                    "leftValue": "={{ $('Set File ID').item.json.mime_type }}",
+                    "rightValue": "=text/plain",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "TXT"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2ebd0def-50c6-4a9b-be04-565f177f8148",
+                    "leftValue": "={{ $('Set File ID').item.json.mime_type }}",
+                    "rightValue": "application/vnd.google-apps.spreadsheet",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CSV"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9a3c1c15-1c8e-485c-8c03-4697348d4287",
+                    "leftValue": "={{ $('Set File ID').item.json.mime_type }}",
+                    "rightValue": "application/vnd.openxmlformats-officedocument.spreadsheetml",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "XLSX "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "870331b8-60b9-4d1a-a816-458244cf9977",
+                    "leftValue": "={{ $('Set File ID').item.json.mime_type }}",
+                    "rightValue": "=application/rtf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "RTF"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8d28ee23-ae49-48b0-b872-bca687d5dd2c",
+                    "leftValue": "={{ $('Set File ID').item.json.mime_type }}",
+                    "rightValue": "application/vnd.google-apps.document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "DOCX"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3584,
+        704
+      ],
+      "id": "ad529457-dd5c-41b9-bab7-6ceef9e69204",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        4240,
+        1392
+      ],
+      "id": "fa7ef900-13cc-4187-abd7-de8a5f846888",
+      "name": "Extract from DOC",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "sendTo": "example@gmail.com",
+        "subject": "Error for File Insertion to Supabase",
+        "emailType": "text",
+        "message": "We have detected that there is an error with the being file sent try to Supabase.\nPlease check.\n\nKind Regards\nUltimate KB",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2608,
+        992
+      ],
+      "id": "f5668bce-705d-4391-8962-4c48d6ec9114",
+      "name": "Error Notification",
+      "webhookId": "b530b409-ce3a-44eb-9efc-ab091105fa54"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "documents",
+        "filterType": "string",
+        "filterString": "=metadata->>file_id=like.*{{ $('Set File ID').item.json.file_id }}*"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        768
+      ],
+      "id": "d801f319-1616-4ae6-bb50-283ed3c1b990",
+      "name": "Delete old Doc",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        4240,
+        400
+      ],
+      "id": "c6ce7cfe-bdd7-4324-8f57-e520ae28949c",
+      "name": "Extract from TXT",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "=You are an are Imma, a helpful AI assistant for answering user queries about documents and tabular data. The documents are either text based (Txt, doc, PDFs, etc..) or tabular data (CSV or Excel documents).\n\nYou are given tools to perform RAG in the documents: 'options_system Message' to look up the documents, extract all the text from a given file, and query the files with SQL in the 'document_rows' table.\n\nAlways start by performing RAG unless the question requires a SQL query for tabular data (fetching a sum, finding a max, something a RAG lookup would be unreliable for). If RAG doesn't help, then look at the documents that are available to you, find a few that you think would contain the answer, then analyze them to find the answer.\n\nJust tell the user IF you did not find the answer. DON'T make something up please."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        480,
+        512
+      ],
+      "id": "f7653916-68f2-41b0-adbb-4f1cedba6017",
+      "name": "RAG AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        880
+      ],
+      "id": "1ec69f6d-4d8b-468e-b00f-5afcb9907d24",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When chat message received').item.json.chatInput }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        912
+      ],
+      "id": "b023c441-d4c4-47b9-b468-ac0260c850f5",
+      "name": "Postgres Chat Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to fetch all documents including the table schema if the file is csv, excel or xlsx \n",
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "document_metadata",
+          "mode": "list",
+          "cachedResultName": "document_metadata"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        544,
+        880
+      ],
+      "id": "fcdb7678-54a6-452b-a045-1ca634bb00b4",
+      "name": "List Documents"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=Run a SQL query - use this to query from the document_rows table once you know the file ID you are querying. dataset_id is the file_id and you are always using the row_data for filtering, which is a jsonb field that has all the keys from the file schema given in the document_metadata table.\n\nExample 1-Basic Aggregation:\n\nSELECT AVG((row_data->>'revenue')::numeric)\nFROM document_rows\nWHERE document_id = '123';\n\n\nExample 1 - Categorical Analysis:\nSELECT\n    row_data->>'category' as category,\n    SUM((row_data->>'sales')::numeric) as total_sales\nFROM dataset_rows\nWHERE document_id = '123'\nGROUP BY row_data->>'category';\n",
+        "operation": "executeQuery",
+        "query": "{{ $fromAI('sql_query') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        912,
+        864
+      ],
+      "id": "76f86d6b-183e-4dac-8fb9-10ea2d6ae301",
+      "name": "Query Document Rows"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.textSplitterCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        4704,
+        880
+      ],
+      "id": "8cb63e61-c95d-47c7-949d-975575eefca9",
+      "name": "Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "document_rows",
+          "mode": "list",
+          "cachedResultName": "document_rows"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "document_id": "={{ $('Set File ID').item.json.file_id }}",
+            "row_data": "={{ $json.toJsonString().replaceAll(/'/g,\"''\") }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "document_id",
+              "displayName": "document_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_data",
+              "displayName": "row_data",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4032,
+        960
+      ],
+      "id": "3142f29e-442b-4db6-9d54-60b2e4b96484",
+      "name": "Insert Table Rows",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "document_rows",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "document_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Set File ID').item.json.file_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2992,
+        768
+      ],
+      "id": "9ea35c82-9642-4d22-961e-d822402820cd",
+      "name": "Delete Old Data Rows",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1e837cb-9b71-40a4-b0ce-0b9b985327d3",
+              "name": "error_type",
+              "value": "invalid File",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2240,
+        992
+      ],
+      "id": "8b8fa94b-d44d-4756-ae15-e3f78b0b7b5f",
+      "name": "Set Error Type"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        512
+      ],
+      "id": "5e68448d-e3da-4271-ad06-baf5339d576b",
+      "name": "When chat message received",
+      "webhookId": "db7e7558-fd4c-4743-b42c-d3b3a38e4d19"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "company_knowledge",
+        "toolDescription": "Use RAG to search for document information",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        928,
+        624
+      ],
+      "id": "19c321f0-4c25-444a-a549-d350678c6c88",
+      "name": "Supabase Vector Store2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        848
+      ],
+      "id": "7c9882fe-a466-4182-98f0-f44e6e51fd75",
+      "name": "Embeddings OpenAI2"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Given file id fetch the text from the documents",
+        "operation": "executeQuery",
+        "query": "SELECT \n  string_agg(documents.content, ' ') as document_text\nFROM documents\nWHERE documents.metadata->>'file_id' = $1\nGROUP BY documents.metadata->>'file_id';\n\n \n/*SELECT \n  id::text,  -- Cast to text to avoid type conflicts\n  string_agg(content, ' ') as document_text\nFROM documents\nWHERE metadata->>'file_id' = $1  -- Use ->> for text extraction\nGROUP BY id;*/",
+        "options": {
+          "queryReplacement": "={{ $fromAI('file_id') }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        720,
+        912
+      ],
+      "id": "ca639e1d-939d-4dcd-b3b3-0ca2a2042105",
+      "name": "Get Full Document Text - Get File Contents"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ead13670-225c-4bb1-a5f1-22a5bb2dc085",
+              "name": "query",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "8d9a8642-ae5f-4bab-a292-06f6ff8c2ba4",
+              "name": "session_id",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        512
+      ],
+      "id": "f163a6b1-0ad7-41f6-a75e-2ca474f020f0",
+      "name": "Send Chat Response"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE document_metadata (\n  id VARCHAR(255) PRIMARY KEY, -- Matches the file_id from knowledge_base\n  title VARCHAR(255) NOT NULL, -- File name\n  url TEXT, -- URL to the file (e.g., Google Drive link)\n  created_at TIMESTAMP DEFAULT NOW(),\n  schema VARCHAR(255) -- MIME type (e.g., application/pdf)\n);\n\n-- Add an index for faster lookups on id\nCREATE INDEX document_metadata_id_idx ON document_metadata (id);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3648,
+        1872
+      ],
+      "id": "f8d3df8b-0fe8-4477-a92d-435cefd5fb03",
+      "name": "MetaData Table"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DROP FUNCTION IF EXISTS match_documents(vector(1536), integer, jsonb);\n\nCREATE OR REPLACE FUNCTION match_documents (\n  query_embedding vector(1536),\n  match_count int DEFAULT 5,\n  filter jsonb DEFAULT '{}'\n) RETURNS TABLE (\n  id uuid,          -- Changed to UUID to match your table\n  content text,\n  metadata jsonb,\n  similarity float\n) LANGUAGE plpgsql AS $$\nBEGIN\n  RETURN QUERY\n  SELECT\n    documents.id,\n    documents.content,\n    documents.metadata,\n    1 - (documents.embedding <=> query_embedding) as similarity\n  FROM documents\n  WHERE documents.metadata @> filter\n  ORDER BY similarity DESC\n  LIMIT match_count;\nEND;\n$$;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4048,
+        1872
+      ],
+      "id": "0afa0c95-b8e5-4321-81f5-4f2cfcf2ce0f",
+      "name": "Documents Table with Match Function"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE document_rows (\n  id SERIAL PRIMARY KEY,\n  document_id VARCHAR(255), -- References the file_id from knowledge_base\n  row_data JSONB NOT NULL, -- The row data as a JSON object (e.g., {\"Name\": \"John\", \"Age\": 30})\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\n-- Add an index for faster lookups on document_id\nCREATE INDEX document_rows_document_id_idx ON document_rows (document_id);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4480,
+        1872
+      ],
+      "id": "a854c749-3940-4d8d-b105-78ffaf0aaf12",
+      "name": "Document Rows Table"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE knowledge_base (\n  id VARCHAR(255) PRIMARY KEY,\n  file_id VARCHAR(255) UNIQUE, -- Unique identifier for the file (e.g., Google Drive file ID)\n  file_name VARCHAR(255) NOT NULL,\n  file_type VARCHAR(255) NOT NULL, -- MIME type (e.g., application/pdf)\n  file_url TEXT, -- URL to the file\n  upload_date TIMESTAMP DEFAULT NOW()\n);\n\n-- Add an index for faster lookups on file_id\nCREATE INDEX knowledge_base_file_id_idx ON knowledge_base (file_id);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4032,
+        2144
+      ],
+      "id": "ebae57d3-5b8f-40c0-95d8-5fbbdf19093c",
+      "name": "Knowledge_base"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE error_log (\n  id SERIAL PRIMARY KEY,\n  error_type VARCHAR(255) NOT NULL, -- Type of error (e.g., \"Duplicate file\", \"RAG Generation Failed\")\n  file_id VARCHAR(255), -- File ID associated with the error (if applicable)\n  file_name VARCHAR(255), -- File name (if applicable)\n  file_size VARCHAR(50), -- File size (if applicable)\n  mime_type VARCHAR(255), -- MIME type (if applicable)\n  timestamp TIMESTAMP DEFAULT NOW()\n);\n\n-- Add an index for faster lookups on error_type\nCREATE INDEX error_log_error_type_idx ON error_log (error_type);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4304,
+        2144
+      ],
+      "id": "a464a6ee-0e33-453c-801c-9ff19c9cdffd",
+      "name": "Error_log Table"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "document_metadata",
+          "mode": "list",
+          "cachedResultName": "document_metadata"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Set File ID').item.json.file_id }}",
+            "title": "={{ $('Set File ID').item.json.file_name }}",
+            "created_at": "={{ new Date().toISOString() }}",
+            "url": "={{ $('Set File ID').item.json.web_view_link }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "schema",
+              "displayName": "schema",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3168,
+        768
+      ],
+      "id": "652b3992-a1cd-405e-875f-53bb7e917b28",
+      "name": "Insert Metadata"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "knowledge_base",
+          "mode": "list",
+          "cachedResultName": "knowledge_base"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "file_id": "={{ $('Set File ID').item.json.file_id }}",
+            "file_name": "={{ $json.title }}",
+            "file_url": "={{ $json.url }}",
+            "id": "={{ $('Set File ID').item.json.file_id }}",
+            "file_type": "={{ $('Set File ID').item.json.mime_type }}",
+            "upload_date": "={{ new Date().toISOString() }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "file_id",
+              "displayName": "file_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "file_name",
+              "displayName": "file_name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "file_type",
+              "displayName": "file_type",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "file_url",
+              "displayName": "file_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "upload_date",
+              "displayName": "upload_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3392,
+        992
+      ],
+      "id": "dd56b472-a50f-4822-bfe7-8451b30083a2",
+      "name": "Insert Knowledgebase"
+    },
+    {
+      "parameters": {
+        "sendTo": "example@gmail.com",
+        "subject": "Duplicate Files Insertion Detected",
+        "emailType": "text",
+        "message": "We have detected that there is a duplicate file insertion try to Supabase.\n\nKind Regards\nUltimate KB",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3024,
+        464
+      ],
+      "id": "6bce102e-8ad7-4813-bd69-d7d24b592595",
+      "name": "Duplicate Notification",
+      "webhookId": "b530b409-ce3a-44eb-9efc-ab091105fa54"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "File Created": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update to File": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Set File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set File ID": {
+      "main": [
+        [
+          {
+            "node": "Validate File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set Error Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Duplicates": {
+      "main": [
+        [
+          {
+            "node": "IF Duplicate Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File PDF": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from CSV": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Table Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from XLSX": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Table Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Set Schema",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from RTF": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Logger": {
+      "main": [
+        [
+          {
+            "node": "Error Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate File": {
+      "main": [
+        [
+          {
+            "node": "Debug File ID",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check for Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Duplicate Check": {
+      "main": [
+        [
+          {
+            "node": "Log Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Duplicate Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Debug File ID": {
+      "main": [
+        [
+          {
+            "node": "Delete old Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Schema": {
+      "main": [
+        [
+          {
+            "node": "Schema Document Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract from File PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from TXT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from CSV",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from XLSX",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from RTF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from DOC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from DOC": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete old Doc": {
+      "main": [
+        [
+          {
+            "node": "Delete Old Data Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from TXT": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Document Rows": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Old Data Rows": {
+      "main": [
+        [
+          {
+            "node": "Insert Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Error Type": {
+      "main": [
+        [
+          {
+            "node": "Error Logger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Send Chat Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store2": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Full Document Text - Get File Contents": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Chat Response": {
+      "main": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MetaData Table": {
+      "main": [
+        [
+          {
+            "node": "Documents Table with Match Function",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Documents Table with Match Function": {
+      "main": [
+        [
+          {
+            "node": "Document Rows Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Knowledge_base": {
+      "main": [
+        [
+          {
+            "node": "Error_log Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Metadata": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Knowledgebase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5850e4ee-bfc5-4de6-bfdf-7fb1c79054da",
+  "meta": {
+    "instanceId": "7bf581d4e75cc4bee0aca0e4317e300bebfdf18d23b5da52335a101a74039e82"
+  },
+  "id": "lsSIEuc7SNRstBdS",
+  "tags": []
+}
